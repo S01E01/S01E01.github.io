@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="../web3/v1.0.0-beta.34/web3.min.js"></script>
+</head>
+<body>
+
+  <h1>Encode safeTxHash</h1>
+
+  <p>Safe address </p>
+  <input type="text" size="80" id="safe_address" placeholder="(address)"></input>
+
+  <p>Chain ID (e.g. Ethereum: 1, Polygon: 137, Fantom Opera: 250)</p>
+  <input type="text" size="80" id="chain_id" placeholder="(uint256)"></input>
+
+  <p>To</p>
+  <input type="text" size="80" id="to_address" placeholder="(address)"></input>
+
+  <p>Value</p>
+  <input type="text" size="80" id="value" placeholder="(uint256)"></input>
+
+  <p>Data</p>
+  <input type="text" size="80" id="data" placeholder="(bytes)"></input>
+
+  <p>Operation</p>
+  <input type="text" size="80" id="operation" placeholder="(uint8)"></input>
+
+  <p>SafeTxGas</p>
+  <input type="text" size="80" id="safe_tx_gas" placeholder="(uint256)"></input>
+
+  <p>Base Gas</p>
+  <input type="text" size="80" id="base_gas" placeholder="(uint256)"></input>
+
+  <p>Gas Price</p>
+  <input type="text" size="80" id="gas_price" placeholder="(uint256)"></input>
+
+  <p>Gas Token</p>
+  <input type="text" size="80" id="gas_token" placeholder="(address)"></input>
+
+  <p>Refund Receiver</p>
+  <input type="text" size="80" id="refund_receiver" placeholder="(address)"></input>
+
+  <p>Nonce</p>
+  <input type="text" size="80" id="nonce" placeholder="(uint256)"></input>
+
+
+  <p>Result</p>
+  <span id="result"></span>
+
+  <script type="module">
+    import { utils } from "../web3/ethers.5.1/ethers-5.1.esm.min.js";
+
+    export const EIP712_SAFE_TX_TYPE = {
+      // "SafeTx(address to,uint256 value,bytes data,uint8 operation,uint256 safeTxGas,uint256 baseGas,uint256 gasPrice,address gasToken,address refundReceiver,uint256 nonce)"
+      SafeTx: [
+        { type: "address", name: "to" },
+        { type: "uint256", name: "value" },
+        { type: "bytes", name: "data" },
+        { type: "uint8", name: "operation" },
+        { type: "uint256", name: "safeTxGas" },
+        { type: "uint256", name: "baseGas" },
+        { type: "uint256", name: "gasPrice" },
+        { type: "address", name: "gasToken" },
+        { type: "address", name: "refundReceiver" },
+        { type: "uint256", name: "nonce" },
+      ]
+    }
+
+    document.getElementById('safe_address').oninput = onChange;
+    document.getElementById('chain_id').oninput = onChange;
+    document.getElementById('to_address').oninput = onChange;
+    document.getElementById('data').oninput = onChange;
+    document.getElementById('operation').oninput = onChange;
+    document.getElementById('safe_tx_gas').oninput = onChange;
+    document.getElementById('base_gas').oninput = onChange;
+    document.getElementById('gas_price').oninput = onChange;
+    document.getElementById('gas_token').oninput = onChange;
+    document.getElementById('refund_receiver').oninput = onChange;
+    document.getElementById('nonce').oninput = onChange;
+
+
+    function onChange(e) {
+
+      const safe = document.getElementById('safe_address').value;
+      const chainId = document.getElementById('chain_id').value;
+      const tx = {
+        to: document.getElementById('to_address').value,
+        value: document.getElementById('value').value,
+        data: document.getElementById('data').value,
+        operation: document.getElementById('operation').value,
+        safeTxGas: document.getElementById('safe_tx_gas').value,
+        baseGas: document.getElementById('base_gas').value,
+        gasPrice: document.getElementById('gas_price').value,
+        gasToken: document.getElementById('gas_token').value,
+        refundReceiver: document.getElementById('refund_receiver').value,
+        nonce: document.getElementById('nonce').value
+      }
+
+      const hash = utils._TypedDataEncoder.hash({ verifyingContract: safe, chainId }, EIP712_SAFE_TX_TYPE, tx)
+
+      // web3.eth.abi.
+      // let encodedFunctionSignature = web3.eth.abi.encodeFunctionSignature(e.value);
+      // console.log(encodedFunctionSignature);
+      // document.getElementById('result').innerText = encode?FunctionSignature;
+      document.getElementById('result').innerText = hash;
+    }
+
+    window.onload = function() {
+      if (typeof web3 !== 'undefined') {
+        web3 = new Web3(web3.currentProvider);
+      } else {
+        web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io"));
+      }
+      console.log(web3.version);
+    }
+
+  </script>
+
+</body>
+</html>
